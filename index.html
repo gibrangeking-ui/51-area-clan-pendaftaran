@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>51 AREA CLAN - PORTAL REGISTER</title>
+    <style>
+        /* TEMA CYBER MOCHA / COKELAT TUA ADVANCED */
+        body {
+            background-color: #120A06;
+            color: #F4EBE1;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            user-select: none; 
+            -webkit-user-select: none;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* NAVBAR CYBER INTERFACE */
+        .cyber-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(19, 11, 6, 0.9);
+            border-bottom: 1px solid #A98467;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 999;
+            box-sizing: border-box;
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-logo {
+            font-weight: bold;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            color: #F4EBE1;
+            text-shadow: 0 0 8px rgba(244, 235, 225, 0.2);
+        }
+
+        .nav-status {
+            font-size: 0.7rem;
+            color: #A98467;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #ff4a4a;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #ff4a4a;
+            animation: blinker 1s linear infinite;
+        }
+
+        /* 1. PORTAL LOCKSCREEN (FRONT GATE) */
+        #lockscreen-portal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0d0704;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000; 
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #lockscreen-portal.unlock {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .secure-box {
+            border: 2px solid #A98467;
+            padding: 25px;
+            width: 100%;
+            max-width: 380px;
+            background-color: #1F120B;
+            box-shadow: 0 0 25px rgba(169, 132, 103, 0.3);
+            text-align: center;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10002;
+        }
+
+        .badge-secure {
+            font-size: 0.75rem;
+            color: #ff4a4a;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border: 1px solid #ff4a4a;
+            padding: 4px 8px;
+            display: inline-block;
+            background: rgba(255, 74, 74, 0.1);
+        }
+
+        /* 2. SCREEN LOADING CINEMATIC */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0d0704;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; 
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
+            display: none; 
+        }
+
+        #loading-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* TYPOGRAPHY & UTILITIES */
+        .headline-text {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: #F4EBE1;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(244, 235, 225, 0.3);
+            text-align: center;
+        }
+
+        .sub-text {
+            font-size: 0.95rem;
+            color: #A98467;
+            margin-bottom: 35px;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .box-sub-text {
+            font-size: 0.85rem;
+            color: #A98467;
+            margin-top: -5px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-align: center;
+            border-bottom: 2px dashed #A98467;
+            padding-bottom: 10px;
+        }
+
+        .status-container {
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-text {
+            font-size: 0.8rem;
+            color: #A98467;
+            min-height: 20px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 5px;
+            background-color: #1F120B;
+            border: 1px solid #A98467;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #A98467, #F4EBE1);
+            box-shadow: 0 0 8px rgba(244, 235, 225, 0.5);
+            transition: width 0.05s linear;
+        }
+
+        .progress-percent {
+            font-size: 0.8rem;
+            color: #F4EBE1;
+            text-align: right;
+            margin-top: 2px;
+        }
+
+        /* SELF-DESTRUCT TIMER UI */
+        #self-destruct-timer {
+            position: absolute;
+            top: 65px; 
+            right: 15px;
+            border: 1px dashed #ff4a4a;
+            background: rgba(255, 74, 74, 0.05);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #ff4a4a;
+            letter-spacing: 1px;
+            z-index: 100;
+            display: none;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .timer-crit {
+            animation: blinker 0.5s linear infinite;
+        }
+
+        /* 3. MAIN CONTENT (FORM PENDAFTARAN) */
+        #main-content {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            padding: 15px;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+            box-sizing: border-box;
+            margin-top: 40px; 
+        }
+
+        #main-content.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cyber-box {
+            border: 2px solid #A98467;
+            padding: 20px;
+            width: 100%;
+            background-color: rgba(31, 18, 11, 0.95);
+            box-shadow: 0 0 20px rgba(169, 132, 103, 0.15);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 7px;
+            background-color: #2C1A11;
+            border: 1px solid #A98467;
+            color: #F4EBE1;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #F4EBE1;
+        }
+
+        input:disabled, select:disabled, textarea:disabled {
+            background-color: #170E09;
+            color: #8C7355;
+            border-color: #594433;
+            cursor: not-allowed;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #A98467;
+            color: #2C1A11;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #F4EBE1;
+        }
+
+        button:disabled {
+            background-color: #594433;
+            color: #170E09;
+            cursor: not-allowed;
+        }
+
+        .btn-request {
+            width: 100%;
+            padding: 10px;
+            background-color: transparent;
+            color: #A98467;
+            border: 1px solid #A98467;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        
+        .btn-request:hover {
+            background-color: rgba(169, 132, 103, 0.1);
+            color: #F4EBE1;
+            border-color: #F4EBE1;
+        }
+
+        /* DEVICE TRACKING DETAILS */
+        .tracking-status-box {
+            border: 1px solid #A98467;
+            background-color: #170E09;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 0.68rem;
+            color: #A98467;
+            line-height: 1.4;
+            text-align: left;
+        }
+        .tracking-status-box span {
+            color: #F4EBE1;
+        }
+
+        #result-box {
+            display: none;
+            border: 1px solid #F4EBE1;
+            background-color: #2C1A11;
+            padding: 12px;
+            margin-top: 15px;
+            text-align: center;
+            animation: fadeInBox 0.8s ease-in-out;
+        }
+
+        .code-title {
+            font-size: 0.75rem;
+            color: #A98467;
+            margin-bottom: 3px;
+        }
+
+        .code-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #F4EBE1;
+            margin-bottom: 12px;
+        }
+
+        /* STYLING FOOTER SECTIONS */
+        .cyber-footer {
+            margin-top: 20px;
+            border-top: 1px dashed rgba(169, 132, 103, 0.4);
+            padding-top: 12px;
+            text-align: center;
+        }
+
+        .footer-copyright {
+            font-size: 0.65rem;
+            color: #A98467;
+            letter-spacing: 1px;
+            line-height: 1.4;
+        }
+
+        .footer-subtext {
+            font-size: 0.58rem;
+            color: #8C7355;
+            letter-spacing: 2px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeInBox {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CUSTOM ALERT INTERFACE */
+        #cyber-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+            z-index: 25000;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            padding-top: 50px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #cyber-alert-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cyber-alert-box {
+            border: 2px solid #ff4a4a; 
+            background-color: #1F120B;
+            width: 90%;
+            max-width: 360px;
+            padding: 20px;
+            box-shadow: 0 0 25px rgba(255, 74, 74, 0.4);
+            text-align: center;
+            box-sizing: border-box;
+            transform: translateY(-100px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #cyber-alert-overlay.show .cyber-alert-box {
+            transform: translateY(0);
+        }
+
+        .alert-header {
+            color: #ff4a4a;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .alert-message {
+            font-size: 0.85rem;
+            color: #F4EBE1;
+            line-height: 1.4;
+            margin-bottom: 18px;
+        }
+
+        .alert-btn {
+            background-color: #ff4a4a;
+            color: #120A06;
+            border: none;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            width: auto;
+            display: inline-block;
+        }
+
+        .alert-btn:hover {
+            background-color: #F4EBE1;
+            color: #ff4a4a;
+        }
+
+        /* 2 MINUTES HARD COOLDOWN OVERLAY BANNER */
+        #destruct-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background-color: #050302;
+            color: #ff4a4a;
+            z-index: 30000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .cooldown-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 74, 74, 0.3);
+        }
+        .cooldown-timer {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #F4EBE1;
+            border: 2px dashed #ff4a4a;
+            padding: 10px 25px;
+            background: rgba(255, 74, 74, 0.05);
+        }
+        .cooldown-tip {
+            font-size: 0.75rem;
+            color: #A98467;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="destruct-overlay">
+        <div class="cooldown-title">[ CRITICAL VIOLATION DETECTED ]</div>
+        <div class="cooldown-timer" id="cooldown-clock">02:00</div>
+        <div class="cooldown-tip">Akses dikunci sementara. Kalau di-refresh, waktu ngulang dari awal! 😉</div>
+    </div>
+
+    <div class="cyber-navbar">
+        <div class="nav-logo">51 AREA PORTAL</div>
+        <div class="nav-status">
+            <div class="status-dot"></div>
+            <span>SECURE CONNECTION</span>
+        </div>
+    </div>
+
+    <div id="self-destruct-timer">WAKTU TERSISA: <span id="timer-clock">45</span>s</div>
+
+    <div id="cyber-alert-overlay">
+        <div class="cyber-alert-box">
+            <div class="alert-header" id="alert-title">SISTEM ERROR</div>
+            <div class="alert-message" id="alert-msg">Peringatan enkripsi sistem terdeteksi.</div>
+            <button type="button" class="alert-btn" id="alert-confirm-btn" onclick="closeCyberAlert()">OKE</button>
+        </div>
+    </div>
+
+    <canvas id="cyber-canvas"></canvas>
+
+    <div id="lockscreen-portal">
+        <canvas id="portal-canvas" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></canvas>
+        <div class="secure-box">
+            <div class="headline-text" style="font-size: 1.8rem;">51 AREA</div>
+            <div class="box-sub-text" style="border:none; padding:0;">We are the Demon😈</div>
+            
+            <div class="badge-secure">[ HIGHLY SECURE GATEWAY ]</div>
+
+            <div class="form-group" style="text-align: left;">
+                <label>MASUKKAN KODE AKSES PORTAL:</label>
+                <input type="text" id="kodeAksesInput" placeholder="Ketik kode di sini..." style="text-align: center; letter-spacing: 3px;">
+            </div>
+            
+            <button type="button" onclick="cekKodeAksesPortal()">MASUK SIKLUS</button>
+            
+            <div style="font-size: 0.7rem; color: #A98467; margin-top: 15px; margin-bottom: -5px; letter-spacing: 1px;">Blom punya akses? minta ke admin</div>
+            <button type="button" class="btn-request" onclick="mintaKodeAkses()">MINTA KODE AKSES</button>
+        </div>
+    </div>
+
+    <div id="loading-screen">
+        <div class="headline-text">51 AREA</div>
+        <div class="sub-text">We are the Demon😈</div>
+        <div class="status-container">
+            <div class="status-text" id="status-cli">> Mengaktifkan protokol proksional...</div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-percent" id="progress-percent">0%</div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="cyber-box">
+            <div class="headline-text" style="font-size: 1.8rem;">51 AREA</div>
+            <div class="box-sub-text">We are the Demon😈</div>
+            
+            <form id="clanForm" onsubmit="generateCodeOnSubmit(event)">
+                <div class="form-group">
+                    <label>NAMA LENGKAP / NICKNAME:</label>
+                    <input type="text" id="nama" placeholder="Masukkan nama panggilan..." required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>UMUR:</label>
+                    <input type="number" id="umur" placeholder="Masukkan umur anda..." required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>ASAL KOTA (ASKOT):</label>
+                    <input type="text" id="askot" placeholder="Masukkan asal kota..." required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>VISI MISI MASUK CLAN:</label>
+                    <textarea rows="2" id="visimisi" placeholder="Tulis visi misi anda dengan jelas..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>DIVISI OPERASI (OPSIONAL):</label>
+                    <select id="spesialisasi">
+                        <option value="-" selected>===>PILIH DIVISI (OPSIONAL)<===</option>
+                        <option value="INTEL (SPY) 🕵️‍♂️">🕵️‍♂️ INTEL (SPY)</option>
+                        <option value="MANIPULATOR 🧠">🧠 MANIPULATOR</option>
+                        <option value="EXECUTOR ⚔️">⚔️ EXECUTOR</option>
+                        <option value="TARGET LOCATOR 🎯">🎯 TARGET LOCATOR (PENCARI TARGET)</option>
+                    </select>
+                </div>
+
+                <div class="tracking-status-box">
+                    ⚙️ OPERASI SIBER TERDETEKSI: <span id="real-device">Loading Device...</span><br>
+                    🔒 ENKRIPSI PORT: <span>AES-256 SECURED</span>
+                </div>
+
+                <button type="submit" id="btnSubmitForm">KIRIM DATA AGEN</button>
+            </form>
+
+            <div id="result-box">
+                <div class="code-title">INGAT KODE OPERASI ANDA DI BAWAH INI:</div>
+                <div class="code-value" id="cyberCode">51-XXXX</div>
+                
+                <div class="form-group" style="text-align: left; margin-bottom: 12px;">
+                    <label style="font-size: 0.75rem; color:#A98467;">VERIFIKASI MANUAL (KETIK ULANG KODE DI ATAS):</label>
+                    <input type="text" id="inputManualVerifikasi" placeholder="Ketik kode di sini..." autocomplete="off">
+                </div>
+                <button type="button" id="btnKirimWA" onclick="kirimKeWA()" style="background-color: #F4EBE1; color: #2C1A11;">KIRIM DATA KE ADMIN</button>
+            </div>
+
+            <div class="cyber-footer">
+                <div class="footer-copyright">Copyright © 2026-2027 51 AREA CLAN All Rights Reserved.</div>
+                <div class="footer-subtext">Powered By seL4 Microkernel // Secure-Isolated</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const KODE_AKSES_VALID = "51-D0MS12"; 
+        const NOMOR_ADMIN = "6285591064172";    
+        
+        let GeneratedCode = "";
+        let countdownTimer = null;
+        let formSubmitted = false;
+
+        // SISTEM COOLDOWN DEFAULT (TIMING BERJALAN NORMAL)
+        let sisaWaktuHukuman = 120; 
+        let internalBannedTimer = null;
+        let cooldownActive = false;
+
+        const statusCli = document.getElementById('status-cli');
+        const progressFill = document.getElementById('progress-fill');
+        const progressPercent = document.getElementById('progress-percent');
+        const lockscreenPortal = document.getElementById('lockscreen-portal');
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainContent = document.getElementById('main-content');
+        const overlay = document.getElementById('cyber-alert-overlay');
+        const alertTitle = document.getElementById('alert-title');
+        const alertMsg = document.getElementById('alert-msg');
+        const alertConfirmBtn = document.getElementById('alert-confirm-btn');
+
+        function showCyberAlert(title, message, isHackingAction = false) {
+            alertTitle.innerText = title.toUpperCase();
+            alertMsg.innerText = message;
+            if (isHackingAction) {
+                alertConfirmBtn.setAttribute("onclick", "closeCyberAlert(); aktifkanSanksiBanned();");
+            } else {
+                alertConfirmBtn.setAttribute("onclick", "closeCyberAlert();");
+            }
+            overlay.classList.add('show');
+        }
+        function closeCyberAlert() { overlay.classList.remove('show'); }
+
+        // CEK STATUS REFRESH SECARA PERMANEN DI LOCALSTORAGE
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('status_banned_aktif') === 'true') {
+                cooldownActive = true;
+                sisaWaktuHukuman = 120; // Otomatis reset paksa ke 2 menit penuh kalau di-refresh!
+                document.getElementById('destruct-overlay').style.display = 'flex';
+                UpdateVisualClockLayar(sisaWaktuHukuman);
+                MulaiTimerHukuman(); 
+            }
+        });
+
+        function aktifkanSanksiBanned() {
+            if (cooldownActive) return;
+            cooldownActive = true;
+            sisaWaktuHukuman = 120; 
+            
+            localStorage.setItem('status_banned_aktif', 'true');
+            document.getElementById('destruct-overlay').style.display = 'flex';
+            UpdateVisualClockLayar(sisaWaktuHukuman);
+            MulaiTimerHukuman();
+        }
+
+        function MulaiTimerHukuman() {
+            clearInterval(internalBannedTimer);
+            
+            // Interval berjalan konvensional (tidak mogok/pause pas ditinggal)
+            internalBannedTimer = setInterval(() => {
+                sisaWaktuHukuman--;
+                UpdateVisualClockLayar(sisaWaktuHukuman);
+
+                if (sisaWaktuHukuman <= 0) {
+                    clearInterval(internalBannedTimer);
+                    localStorage.removeItem('status_banned_aktif'); 
+                    document.getElementById('destruct-overlay').style.display = 'none';
+                    cooldownActive = false;
+                    window.location.reload(); 
+                }
+            }, 1000);
+        }
+
+        function UpdateVisualClockLayar(totalDetik) {
+            const clockNode = document.getElementById('cooldown-clock');
+            const minutes = Math.floor(totalDetik / 60);
+            const seconds = totalDetik % 60;
+            const displayMin = minutes < 10 ? "0" + minutes : minutes;
+            const displaySec = seconds < 10 ? "0" + seconds : seconds;
+            clockNode.innerText = `${displayMin}:${displaySec}`;
+        }
+
+        // SENSOR LINK KLIK KANAN & F12
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            if(!cooldownActive) showCyberAlert("PROHIBITED ACTION", "Tindakan ilegal terdeteksi! Sistem keamanan melarang klik kanan pada dokumen ini.", true);
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
+                e.preventDefault();
+                if(!cooldownActive) showCyberAlert("SECURITY BREACH", "Deteksi pemindaian elemen aktif. Protokol keamanan memblokir perangkat Anda.", true);
+                return false;
+            }
+        });
+
+        function deteksiPerangkatRiil() {
+            const ua = navigator.userAgent;
+            let deviceType = "UNKNOWN NODE";
+            if (/android/i.test(ua)) deviceType = "ANDROID MOBILE";
+            else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) deviceType = "IOS DEVICE";
+            else if (/Windows/i.test(ua)) deviceType = "WINDOWS WORKSTATION";
+            else if (/Mac/i.test(ua)) deviceType = "MACINTOSH MACHINE";
+            else if (/Linux/i.test(ua)) deviceType = "LINUX CORE SYSTEM";
+            document.getElementById('real-device').innerText = deviceType;
+        }
+
+        function mintaKodeAkses() {
+            const teksMinta = `Halo Admin 51 AREA, saya ingin meminta Kode Akses Portal Utama untuk melakukan registrasi keanggotaan Clan.`;
+            const linkWA = `https://api.whatsapp.com/send?phone=${NOMOR_ADMIN}&text=${encodeURIComponent(teksMinta)}`;
+            window.open(linkWA, '_blank');
+        }
+
+        function cekKodeAksesPortal() {
+            if (cooldownActive) return;
+            const inputUser = document.getElementById('kodeAksesInput').value.trim();
+            if (inputUser === KODE_AKSES_VALID) {
+                lockscreenPortal.classList.add('unlock');
+                loadingScreen.style.display = 'flex';
+                runLoadingAnimation();
+            } else {
+                showCyberAlert("AKSES DITOLAK", "Kode Akses Portal tidak valid atau kedaluwarsa.");
+            }
+        }
+
+        function runLoadingAnimation() {
+            let percent = 0;
+            const subLog = [
+                "> Mengaktifkan protokol proksional...",
+                "> Sinkronisasi database internal...",
+                "> Enkripsi pertahanan form siber...",
+                "> Portal terbuka, bersiap masuk..."
+            ];
+            
+            const fillNode = document.getElementById('progress-fill');
+            const progressInterval = setInterval(() => {
+                percent += 2; 
+                if (percent === 26) statusCli.innerText = subLog[0];
+                if (percent === 50) statusCli.innerText = subLog[1];
+                if (percent === 76) statusCli.innerText = subLog[2];
+                if (percent === 94) statusCli.innerText = subLog[3];
+
+                if (percent >= 100) {
+                    clearInterval(progressInterval);
+                    setTimeout(() => {
+                        loadingScreen.classList.add('fade-out');
+                        mainContent.classList.add('fade-in');
+                        deteksiPerangkatRiil();
+                        startSelfDestructTimer(45); 
+                    }, 300);
+                }
+                if(fillNode) fillNode.style.width = `${percent}%`;
+                progressPercent.innerText = `${percent}%`;
+            }, 50);
+        }
+
+        function startSelfDestructTimer(seconds) {
+            const timerUI = document.getElementById('self-destruct-timer');
+            const clock = document.getElementById('timer-clock');
+            timerUI.style.display = 'block';
+
+            let timeLeft = seconds;
+            countdownTimer = setInterval(() => {
+                if (formSubmitted || cooldownActive) {
+                    clearInterval(countdownTimer);
+                    timerUI.style.display = 'none';
+                    return;
+                }
+                timeLeft--;
+                clock.innerText = timeLeft;
+                if (timeLeft <= 10) timerUI.classList.add('timer-crit');
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownTimer);
+                    timerUI.style.display = 'none';
+                    aktifkanSanksiBanned();
+                }
+            }, 1000);
+        }
+
+        function setupCyberNetworkMesh(canvasId) {
+            const canvasEl = document.getElementById(canvasId);
+            const ctxEl = canvasEl.getContext('2d');
+            let nodes = [];
+            const maxNodes = 45;
+            const linkDistance = 110;
+
+            function resize() {
+                canvasEl.width = window.innerWidth;
+                canvasEl.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class CyberNode {
+                constructor() {
+                    this.x = Math.random() * canvasEl.width;
+                    this.y = Math.random() * canvasEl.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.radius = 1.5;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > canvasEl.width) this.vx = -this.vx;
+                    if (this.y < 0 || this.y > canvasEl.height) this.vy = -this.vy;
+                }
+                draw() {
+                    ctxEl.beginPath();
+                    ctxEl.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctxEl.fillStyle = 'rgba(169, 132, 103, 0.6)';
+                    ctxEl.fill();
+                }
+            }
+
+            for (let i = 0; i < maxNodes; i++) {
+                nodes.push(new CyberNode());
+            }
+
+            function drawMesh() {
+                ctxEl.clearRect(0, 0, canvasEl.width, canvasEl.height);
+                
+                for (let i = 0; i < nodes.length; i++) {
+                    nodes[i].update();
+                    nodes[i].draw();
+                    
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[i].x - nodes[j].x;
+                        const dy = nodes[i].y - nodes[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < linkDistance) {
+                            const alpha = (1 - (dist / linkDistance)) * 0.25;
+                            ctxEl.beginPath();
+                            ctxEl.moveTo(nodes[i].x, nodes[i].y);
+                            ctxEl.lineTo(nodes[j].x, nodes[j].y);
+                            ctxEl.strokeStyle = `rgba(169, 132, 103, ${alpha})`;
+                            ctxEl.lineWidth = 0.8;
+                            ctxEl.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(drawMesh);
+            }
+            drawMesh();
+        }
+
+        setupCyberNetworkMesh('cyber-canvas');
+        setupCyberNetworkMesh('portal-canvas');
+
+        function generateRandomHexCode() {
+            const chars = "0123456789ABCDEF";
+            let code = "";
+            for (let i = 0; i < 4; i++) {
+                code += chars[Math.floor(Math.random() * 16)];
+            }
+            return "51-" + code;
+        }
+
+        function lockSeluruhFormUtama() {
+            document.getElementById('nama').disabled = true;
+            document.getElementById('umur').disabled = true;
+            document.getElementById('askot').disabled = true;
+            document.getElementById('visimisi').disabled = true;
+            document.getElementById('spesialisasi').disabled = true;
+        }
+
+        function generateCodeOnSubmit(event) {
+            event.preventDefault();
+            lockSeluruhFormUtama();
+            
+            formSubmitted = true;
+            document.getElementById('btnSubmitForm').disabled = true;
+            
+            GeneratedCode = generateRandomHexCode();
+            document.getElementById('cyberCode').innerText = GeneratedCode;
+            document.getElementById('result-box').style.display = 'block';
+        }
+
+        function kirimKeWA() {
+            const inputManual = document.getElementById('inputManualVerifikasi').value.trim().toUpperCase();
+            if (inputManual === "") { showCyberAlert("INPUT RE-TYPE KOSONG", "Kolom verifikasi manual wajib diisi demi validasi sistem!"); return; }
+            if (inputManual !== GeneratedCode) { showCyberAlert("VERIFIKASI GAGAL", "Kode verifikasi manual yang Anda masukkan tidak cocok dengan yang tertera."); return; }
+            
+            document.getElementById('inputManualVerifikasi').disabled = true;
+            document.getElementById('btnKirimWA').disabled = true;
+
+            const nama = document.getElementById('nama').value.trim();
+            const umur = document.getElementById('umur').value.trim();
+            const askot = document.getElementById('askot').value.trim();
+            const visimisi = document.getElementById('visimisi').value.trim();
+            const spesialisasi = document.getElementById('spesialisasi').value;
+            const device = document.getElementById('real-device').innerText;
+
+            const teksWA = `*REGISTRASI AGEN BARU - 51 AREA*\n` +
+                          `====================================\n\n` +
+                          `🆔 *KODE OPERASI :* (Isi Manual Kode Anda Di Sini: .....) \n` +
+                          `👤 *NAMA/NICK :* ${nama}\n` +
+                          `🎂 *UMUR :* ${umur} Tahun\n` +
+                          `🗺️ *ASKOT :* ${askot}\n` +
+                          `🎯 *DIVISI :* ${spesialisasi}\n` +
+                          `📱 *NODE DETEKSI :* ${device}\n\n` +
+                          `📜 *VISI MISI MASUK CLAN :*\n"${visimisi}"\n\n` +
+                          `====================================\n` +
+                          `_Status Data: Encrypted & Verified._`;
+
+            const linkWA = `https://api.whatsapp.com/send?phone=${NOMOR_ADMIN}&text=${encodeURIComponent(teksWA)}`;
+            window.open(linkWA, '_blank');
+        }
+    </script>
+</body>
+</html>
